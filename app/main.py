@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from app.routes import users, todos
+from . import models
+from .database import engine
+from .routes import auth
 
 app = FastAPI(title="todolist api")
 
-#register endpoints
+models.Base.metadata.create_all(bind=engine)
 
-app.include_router(users.router)
-app.include_router(todos.router)
+app.include_router(auth.router, prefix="/auth", tags=["Authetication"])
