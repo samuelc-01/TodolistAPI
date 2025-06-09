@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from . import models
-from .database import engine
+from .db.database import engine
 from .routes import auth
 
 app = FastAPI(title="todolist api")

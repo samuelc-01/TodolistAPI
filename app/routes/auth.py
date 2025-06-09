@@ -1,28 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .. import models, schemas
-from ..database import SessionLocal
+from fastapi.security import OAuth2PasswordRequestForm
+from core.security import verify_password, create_access_token
+from db.database import get_db
+from db.database import User
+from schemas.token import Token
 
 router = APIRouter()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:db.close()
+@router.post("/login", response_model=Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email== form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="input not valid")
 
-@router.post("register", response_model=schemas.UserCreate)
-def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="email already registered")
-    
-    new_user = models.User(
-        username=user.username,
-        email=user.email,
-        password=user.password # hash after
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    token = create_access_token({"sub": user.email})
+    return {"access_token": token, "token_type": "bearer"}
