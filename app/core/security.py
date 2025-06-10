@@ -8,7 +8,7 @@ SECRET_KEY = "my_key"
 ALGORITHM = "HS256"
 EXPIRE_MINUTES = 30
 
-#hash
+#hash commit
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
