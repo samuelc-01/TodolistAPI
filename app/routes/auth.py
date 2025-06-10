@@ -12,7 +12,11 @@ router = APIRouter()
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email== form_data.username).first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+
+    if not user:
+        raise HTTPException(status_code=401, detail="user does not exist")
+
+    if  not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="input not valid")
 
     token = create_access_token({"sub": user.email})
