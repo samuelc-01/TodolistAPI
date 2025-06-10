@@ -1,12 +1,15 @@
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+import os 
+from dotenv import load_dotenv
 
 #configuration of JWT
+load_dotenv()
 
-SECRET_KEY = "my_key"
-ALGORITHM = "HS256"
-EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+EXPIRE_MINUTES = int(os.getenv("EXPIRE_MINUTES", 30))
 
 #hash commit
 
