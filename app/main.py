@@ -1,10 +1,8 @@
 from fastapi import FastAPI
-from .db.database import Base, engine
-from .schemas.models import User
-from .routes import auth
+from app.routes import auth, protected, todos
 
-app = FastAPI(title="todolist api")
+app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
-#User.Base.metadata.create_all(bind=engine)
-app.include_router(auth.router, prefix="/auth", tags=["Authetication"])
+app.include_router(auth.router)
+app.include_router(protected.router)
+app.include_router(todos.router)
